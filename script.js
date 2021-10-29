@@ -87,6 +87,7 @@ var ToDoList = function (_React$Component2) {
         _this2.handleSubmit = _this2.handleSubmit.bind(_this2);
         _this2.fetchTasks = _this2.fetchTasks.bind(_this2);
         _this2.deleteTask = _this2.deleteTask.bind(_this2);
+        _this2.toggleComplete = _this2.toggleComplete.bind(_this2);
         return _this2;
     }
 
@@ -126,6 +127,26 @@ var ToDoList = function (_React$Component2) {
             });
         }
     }, {
+        key: "toggleComplete",
+        value: function toggleComplete(id, completed) {
+            var _this5 = this;
+
+            if (!id) {
+                return;
+            }
+            var newState = completed ? 'active' : 'complete';
+
+            fetch("https://altcademy-to-do-list-api.herokuapp.com/tasks/" + id + "/mark_" + newState + "?api_key=157", {
+                method: "PUT",
+                mode: "cors"
+            }).then(checkStatus).then(json).then(function (data) {
+                _this5.fetchTasks();
+            }).catch(function (error) {
+                _this5.setState({ error: error.message });
+                console.log(error);
+            });
+        }
+    }, {
         key: "handleChange",
         value: function handleChange(event) {
             this.setState({ new_task: event.target.value });
@@ -133,7 +154,7 @@ var ToDoList = function (_React$Component2) {
     }, {
         key: "handleSubmit",
         value: function handleSubmit(event) {
-            var _this5 = this;
+            var _this6 = this;
 
             event.preventDefault();
             var new_task = this.state.new_task;
@@ -153,17 +174,17 @@ var ToDoList = function (_React$Component2) {
                     }
                 })
             }).then(checkStatus).then(json).then(function (data) {
-                _this5.setState({ new_task: '' });
-                _this5.fetchTasks();
+                _this6.setState({ new_task: '' });
+                _this6.fetchTasks();
             }).catch(function (error) {
-                _this5.setState({ error: error.message });
+                _this6.setState({ error: error.message });
                 console.log(error);
             });
         }
     }, {
         key: "render",
         value: function render() {
-            var _this6 = this;
+            var _this7 = this;
 
             var _state = this.state,
                 new_task = _state.new_task,
@@ -187,7 +208,8 @@ var ToDoList = function (_React$Component2) {
                             return React.createElement(Task, {
                                 key: task.id,
                                 task: task,
-                                onDelete: _this6.deleteTask
+                                onDelete: _this7.deleteTask,
+                                onComplete: _this7.toggleComplete
                             });
                         }) : React.createElement(
                             "p",
