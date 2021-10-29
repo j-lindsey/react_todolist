@@ -238,19 +238,19 @@ var ToDoList = function (_React$Component2) {
                             { className: "mt-3" },
                             React.createElement(
                                 "label",
-                                null,
+                                { className: "mx-3" },
                                 React.createElement("input", { type: "checkbox", name: "all", checked: filter === "all", onChange: this.toggleFilter }),
                                 " All"
                             ),
                             React.createElement(
                                 "label",
-                                null,
+                                { className: "mx-3" },
                                 React.createElement("input", { type: "checkbox", name: "active", checked: filter === "active", onChange: this.toggleFilter }),
                                 " Active"
                             ),
                             React.createElement(
                                 "label",
-                                null,
+                                { className: "mx-3" },
                                 React.createElement("input", { type: "checkbox", name: "completed", checked: filter === "completed", onChange: this.toggleFilter }),
                                 " Completed"
                             )

@@ -165,13 +165,13 @@ class ToDoList extends React.Component {
                             />);
                         }) : <p>no tasks here</p>}
                         <div className="mt-3">
-                            <label>
+                            <label className="mx-3">
                                 <input type="checkbox" name="all" checked={filter === "all"} onChange={this.toggleFilter} /> All
                             </label>
-                            <label>
+                            <label className="mx-3">
                                 <input type="checkbox" name="active" checked={filter === "active"} onChange={this.toggleFilter} /> Active
                             </label>
-                            <label>
+                            <label className="mx-3">
                                 <input type="checkbox" name="completed" checked={filter === "completed"} onChange={this.toggleFilter} /> Completed
                             </label>
                         </div>
