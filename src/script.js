@@ -36,19 +36,18 @@ class ToDoList extends React.Component {
         this.state = {
             new_task: '',
             tasks: [],
+            error: ''
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-    }
-    handleChange(event) {
-        this.setState({ new_task: event.target.value });
-    }
-    handleSubmit(event) {
-        event.preventDefault();
-        // do nothing for now
+        this.fetchTasks = this.fetchTasks.bind(this);
     }
 
     componentDidMount() {
+        this.fetchTask();
+    }
+
+    fetchTasks() {
         fetch("https://altcademy-to-do-list-api.herokuapp.com/tasks?api_key=157")
             .then(checkStatus)
             .then(json)
@@ -59,6 +58,39 @@ class ToDoList extends React.Component {
             .catch(error => {
                 console.log(error.message);
             })
+    }
+
+    handleChange(event) {
+        this.setState({ new_task: event.target.value });
+    }
+    handleSubmit(event) {
+        event.preventDefault();
+        let { new_task } = this.state;
+        new_task = new_task.trim();
+        if (!new_task) {
+            return;
+        }
+
+        fetch("https://altcademy-to-do-list-api.herokuapp.com/tasks?api_key=157", {
+            method: "POST",
+            mode: "cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              task: {
+                content: new_task
+              }
+            }),
+          }).then(checkStatus)
+            .then(json)
+            .then((data) => {
+              this.setState({new_task: ''});
+              this.fetchTasks();
+            })
+            .catch((error) => {
+              this.setState({ error: error.message });
+              console.log(error);
+            })
+        }
     }
 
     render() {
