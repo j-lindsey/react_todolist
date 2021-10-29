@@ -80,18 +80,20 @@ var ToDoList = function (_React$Component2) {
 
         _this2.state = {
             new_task: '',
-            tasks: []
+            tasks: [],
+            error: ''
         };
         _this2.handleChange = _this2.handleChange.bind(_this2);
         _this2.handleSubmit = _this2.handleSubmit.bind(_this2);
         _this2.fetchTasks = _this2.fetchTasks.bind(_this2);
+        _this2.deleteTask = _this2.deleteTask.bind(_this2);
         return _this2;
     }
 
     _createClass(ToDoList, [{
         key: "componentDidMount",
         value: function componentDidMount() {
-            this.fetchTask();
+            this.fetchTasks();
         }
     }, {
         key: "fetchTasks",
@@ -106,6 +108,24 @@ var ToDoList = function (_React$Component2) {
             });
         }
     }, {
+        key: "deleteTask",
+        value: function deleteTask(id) {
+            var _this4 = this;
+
+            if (!id) {
+                return; // if no id is supplied, early return
+            }
+            fetch("https://altcademy-to-do-list-api.herokuapp.com/tasks/" + id + "?api_key=157", {
+                method: "DELETE",
+                mode: "cors"
+            }).then(checkStatus).then(json).then(function (data) {
+                _this4.fetchTasks(); // fetch tasks after delete
+            }).catch(function (error) {
+                _this4.setState({ error: error.message });
+                console.log(error);
+            });
+        }
+    }, {
         key: "handleChange",
         value: function handleChange(event) {
             this.setState({ new_task: event.target.value });
@@ -113,6 +133,8 @@ var ToDoList = function (_React$Component2) {
     }, {
         key: "handleSubmit",
         value: function handleSubmit(event) {
+            var _this5 = this;
+
             event.preventDefault();
             var new_task = this.state.new_task;
 
@@ -120,10 +142,29 @@ var ToDoList = function (_React$Component2) {
             if (!new_task) {
                 return;
             }
+
+            fetch("https://altcademy-to-do-list-api.herokuapp.com/tasks?api_key=157", {
+                method: "POST",
+                mode: "cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    task: {
+                        content: new_task
+                    }
+                })
+            }).then(checkStatus).then(json).then(function (data) {
+                _this5.setState({ new_task: '' });
+                _this5.fetchTasks();
+            }).catch(function (error) {
+                _this5.setState({ error: error.message });
+                console.log(error);
+            });
         }
     }, {
         key: "render",
         value: function render() {
+            var _this6 = this;
+
             var _state = this.state,
                 new_task = _state.new_task,
                 tasks = _state.tasks;
@@ -143,7 +184,11 @@ var ToDoList = function (_React$Component2) {
                             "To Do List"
                         ),
                         tasks.length > 0 ? tasks.map(function (task) {
-                            return React.createElement(Task, { key: task.id, task: task });
+                            return React.createElement(Task, {
+                                key: task.id,
+                                task: task,
+                                onDelete: _this6.deleteTask
+                            });
                         }) : React.createElement(
                             "p",
                             null,

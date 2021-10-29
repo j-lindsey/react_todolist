@@ -41,10 +41,11 @@ class ToDoList extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.fetchTasks = this.fetchTasks.bind(this);
+        this.deleteTask = this.deleteTask.bind(this);
     }
 
     componentDidMount() {
-        this.fetchTask();
+        this.fetchTasks();
     }
 
     fetchTasks() {
@@ -57,6 +58,24 @@ class ToDoList extends React.Component {
             })
             .catch(error => {
                 console.log(error.message);
+            })
+    }
+
+    deleteTask(id) {
+        if (!id) {
+            return; // if no id is supplied, early return
+        }
+        fetch(`https://altcademy-to-do-list-api.herokuapp.com/tasks/${id}?api_key=157`, {
+            method: "DELETE",
+            mode: "cors",
+        }).then(checkStatus)
+            .then(json)
+            .then((data) => {
+                this.fetchTasks(); // fetch tasks after delete
+            })
+            .catch((error) => {
+                this.setState({ error: error.message });
+                console.log(error);
             })
     }
 
@@ -76,22 +95,22 @@ class ToDoList extends React.Component {
             mode: "cors",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              task: {
-                content: new_task
-              }
+                task: {
+                    content: new_task
+                }
             }),
-          }).then(checkStatus)
+        }).then(checkStatus)
             .then(json)
             .then((data) => {
-              this.setState({new_task: ''});
-              this.fetchTasks();
+                this.setState({ new_task: '' });
+                this.fetchTasks();
             })
             .catch((error) => {
-              this.setState({ error: error.message });
-              console.log(error);
+                this.setState({ error: error.message });
+                console.log(error);
             })
-        }
     }
+
 
     render() {
         const { new_task, tasks } = this.state;
@@ -101,7 +120,11 @@ class ToDoList extends React.Component {
                     <div className="col-12">
                         <h2 className="mb-3">To Do List</h2>
                         {tasks.length > 0 ? tasks.map((task) => {
-                            return <Task key={task.id} task={task} />;
+                            return (<Task
+                                key={task.id}
+                                task={task}
+                                onDelete={this.deleteTask}
+                            />);
                         }) : <p>no tasks here</p>}
                         <form onSubmit={this.handleSubmit} className="form-inline my-4">
                             <input
@@ -119,6 +142,7 @@ class ToDoList extends React.Component {
         )
     }
 }
+
 ReactDOM.render(
     <ToDoList />,
     document.getElementById('root')
